@@ -422,6 +422,22 @@ class SummaryAndReportTests(unittest.TestCase):
         summary["response_id"] = "resp-secret"
         sanitized = sanitize_summary(summary)
         self.assertEqual(SAMPLE_SUMMARY_ALLOWLIST, set(sanitized))
+        self.assertEqual(
+            [
+                "logical_requests",
+                "completed",
+                "failed",
+                "request_hit_rate",
+                "substantive_request_hit_rate",
+                "substantive_hits",
+                "token_weighted_cache_rate",
+                "prefix_efficiency_p50",
+                "usage",
+                "timing",
+                "cost",
+            ],
+            list(sanitized["overall"]),
+        )
         serialized = json.dumps(sanitized, sort_keys=True)
         for forbidden in (
             "secret.example.com",

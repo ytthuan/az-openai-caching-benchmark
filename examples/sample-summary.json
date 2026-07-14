@@ -32,21 +32,13 @@
   },
   "overall": {
     "logical_requests": 105,
+    "completed": 105,
+    "failed": 0,
     "request_hit_rate": 0.5047619047619047,
+    "substantive_request_hit_rate": 0.5047619047619047,
     "substantive_hits": 53,
-    "cost": {
-      "uncached_input_usd": 0.31295775,
-      "cached_input_usd": 0.0314688,
-      "actual_input_usd": 0.34442655,
-      "no_cache_input_usd": 0.62764575,
-      "input_savings_usd": 0.2832192,
-      "input_savings_rate": 0.4512405285943544,
-      "output_usd": 0.048231,
-      "actual_usd": 0.39265755,
-      "no_cache_usd": 0.67587675,
-      "savings_usd": 0.2832192,
-      "total_savings_rate": 0.4190397139715192
-    },
+    "token_weighted_cache_rate": 0.5013783651048382,
+    "prefix_efficiency_p50": 0.9698135898977751,
     "usage": {
       "input_tokens": 836861,
       "cached_tokens": 419584,
@@ -55,8 +47,6 @@
       "reasoning_tokens": 6085,
       "total_tokens": 847579
     },
-    "completed": 105,
-    "token_weighted_cache_rate": 0.5013783651048382,
     "timing": {
       "first_event_ms": {
         "count": 105,
@@ -79,27 +69,29 @@
         "p95": 38.25067983080561
       }
     },
-    "prefix_efficiency_p50": 0.9698135898977751,
-    "substantive_request_hit_rate": 0.5047619047619047,
-    "failed": 0
+    "cost": {
+      "uncached_input_usd": 0.31295775,
+      "cached_input_usd": 0.0314688,
+      "actual_input_usd": 0.34442655,
+      "no_cache_input_usd": 0.62764575,
+      "input_savings_usd": 0.2832192,
+      "input_savings_rate": 0.4512405285943544,
+      "output_usd": 0.048231,
+      "actual_usd": 0.39265755,
+      "no_cache_usd": 0.67587675,
+      "savings_usd": 0.2832192,
+      "total_savings_rate": 0.4190397139715192
+    }
   },
   "optimized": {
     "logical_requests": 44,
+    "completed": 44,
+    "failed": 0,
     "request_hit_rate": 1.0,
+    "substantive_request_hit_rate": 1.0,
     "substantive_hits": 44,
-    "cost": {
-      "uncached_input_usd": 0.00872175,
-      "cached_input_usd": 0.026169599999999998,
-      "actual_input_usd": 0.03489135,
-      "no_cache_input_usd": 0.27041775,
-      "input_savings_usd": 0.23552640000000002,
-      "input_savings_rate": 0.8709724121290116,
-      "output_usd": 0.021672,
-      "actual_usd": 0.05656335,
-      "no_cache_usd": 0.29208975000000004,
-      "savings_usd": 0.23552640000000002,
-      "total_savings_rate": 0.8063494182866738
-    },
+    "token_weighted_cache_rate": 0.9677471245877906,
+    "prefix_efficiency_p50": 0.9698135898977751,
     "usage": {
       "input_tokens": 360557,
       "cached_tokens": 348928,
@@ -108,8 +100,6 @@
       "reasoning_tokens": 2822,
       "total_tokens": 365373
     },
-    "completed": 44,
-    "token_weighted_cache_rate": 0.9677471245877906,
     "timing": {
       "first_event_ms": {
         "count": 44,
@@ -132,27 +122,29 @@
         "p95": 30.29823658230717
       }
     },
-    "prefix_efficiency_p50": 0.9698135898977751,
-    "substantive_request_hit_rate": 1.0,
-    "failed": 0
+    "cost": {
+      "uncached_input_usd": 0.00872175,
+      "cached_input_usd": 0.026169599999999998,
+      "actual_input_usd": 0.03489135,
+      "no_cache_input_usd": 0.27041775,
+      "input_savings_usd": 0.23552640000000002,
+      "input_savings_rate": 0.8709724121290116,
+      "output_usd": 0.021672,
+      "actual_usd": 0.05656335,
+      "no_cache_usd": 0.29208975000000004,
+      "savings_usd": 0.23552640000000002,
+      "total_savings_rate": 0.8063494182866738
+    }
   },
   "degraded": {
     "logical_requests": 36,
+    "completed": 36,
+    "failed": 0,
     "request_hit_rate": 0.16666666666666666,
+    "substantive_request_hit_rate": 0.16666666666666666,
     "substantive_hits": 6,
-    "cost": {
-      "uncached_input_usd": 0.1855305,
-      "cached_input_usd": 0.0036287999999999997,
-      "actual_input_usd": 0.18915929999999997,
-      "no_cache_input_usd": 0.2218185,
-      "input_savings_usd": 0.03265920000000003,
-      "input_savings_rate": 0.14723388716450625,
-      "output_usd": 0.011529,
-      "actual_usd": 0.2006883,
-      "no_cache_usd": 0.2333475,
-      "savings_usd": 0.03265920000000003,
-      "total_savings_rate": 0.1399595024587794
-    },
+    "token_weighted_cache_rate": 0.16359320796056234,
+    "prefix_efficiency_p50": 0.9716833353416074,
     "usage": {
       "input_tokens": 295758,
       "cached_tokens": 48384,
@@ -161,8 +153,6 @@
       "reasoning_tokens": 956,
       "total_tokens": 298320
     },
-    "completed": 36,
-    "token_weighted_cache_rate": 0.16359320796056234,
     "timing": {
       "first_event_ms": {
         "count": 36,
@@ -185,28 +175,30 @@
         "p95": 34.480840142350644
       }
     },
-    "prefix_efficiency_p50": 0.9716833353416074,
-    "substantive_request_hit_rate": 0.16666666666666666,
-    "failed": 0
+    "cost": {
+      "uncached_input_usd": 0.1855305,
+      "cached_input_usd": 0.0036287999999999997,
+      "actual_input_usd": 0.18915929999999997,
+      "no_cache_input_usd": 0.2218185,
+      "input_savings_usd": 0.03265920000000003,
+      "input_savings_rate": 0.14723388716450625,
+      "output_usd": 0.011529,
+      "actual_usd": 0.2006883,
+      "no_cache_usd": 0.2333475,
+      "savings_usd": 0.03265920000000003,
+      "total_savings_rate": 0.1399595024587794
+    }
   },
   "arms": {
     "cache_key_cardinality/per-request-key": {
       "logical_requests": 10,
+      "completed": 10,
+      "failed": 0,
       "request_hit_rate": 0.0,
+      "substantive_request_hit_rate": 0.0,
       "substantive_hits": 0,
-      "cost": {
-        "uncached_input_usd": 0.0616125,
-        "cached_input_usd": 0.0,
-        "actual_input_usd": 0.0616125,
-        "no_cache_input_usd": 0.0616125,
-        "input_savings_usd": 0.0,
-        "input_savings_rate": 0.0,
-        "output_usd": 0.0032985,
-        "actual_usd": 0.064911,
-        "no_cache_usd": 0.064911,
-        "savings_usd": 0.0,
-        "total_savings_rate": 0.0
-      },
+      "token_weighted_cache_rate": 0.0,
+      "prefix_efficiency_p50": null,
       "usage": {
         "input_tokens": 82150,
         "cached_tokens": 0,
@@ -215,8 +207,6 @@
         "reasoning_tokens": 283,
         "total_tokens": 82883
       },
-      "completed": 10,
-      "token_weighted_cache_rate": 0.0,
       "timing": {
         "first_event_ms": {
           "count": 10,
@@ -239,27 +229,29 @@
           "p95": 35.003306797308895
         }
       },
-      "prefix_efficiency_p50": null,
-      "substantive_request_hit_rate": 0.0,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.0616125,
+        "cached_input_usd": 0.0,
+        "actual_input_usd": 0.0616125,
+        "no_cache_input_usd": 0.0616125,
+        "input_savings_usd": 0.0,
+        "input_savings_rate": 0.0,
+        "output_usd": 0.0032985,
+        "actual_usd": 0.064911,
+        "no_cache_usd": 0.064911,
+        "savings_usd": 0.0,
+        "total_savings_rate": 0.0
+      }
     },
     "cache_key_cardinality/stable-key": {
       "logical_requests": 10,
+      "completed": 10,
+      "failed": 0,
       "request_hit_rate": 0.9,
+      "substantive_request_hit_rate": 0.9,
       "substantive_hits": 9,
-      "cost": {
-        "uncached_input_usd": 0.0070905,
-        "cached_input_usd": 0.0054432,
-        "actual_input_usd": 0.012533699999999998,
-        "no_cache_input_usd": 0.0615225,
-        "input_savings_usd": 0.0489888,
-        "input_savings_rate": 0.7962745337071803,
-        "output_usd": 0.003042,
-        "actual_usd": 0.015575699999999998,
-        "no_cache_usd": 0.0645645,
-        "savings_usd": 0.0489888,
-        "total_savings_rate": 0.7587575215482193
-      },
+      "token_weighted_cache_rate": 0.884749481896867,
+      "prefix_efficiency_p50": 0.9716833353416074,
       "usage": {
         "input_tokens": 82030,
         "cached_tokens": 72576,
@@ -268,8 +260,6 @@
         "reasoning_tokens": 246,
         "total_tokens": 82706
       },
-      "completed": 10,
-      "token_weighted_cache_rate": 0.884749481896867,
       "timing": {
         "first_event_ms": {
           "count": 10,
@@ -292,27 +282,29 @@
           "p95": 37.59801968354387
         }
       },
-      "prefix_efficiency_p50": 0.9716833353416074,
-      "substantive_request_hit_rate": 0.9,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.0070905,
+        "cached_input_usd": 0.0054432,
+        "actual_input_usd": 0.012533699999999998,
+        "no_cache_input_usd": 0.0615225,
+        "input_savings_usd": 0.0489888,
+        "input_savings_rate": 0.7962745337071803,
+        "output_usd": 0.003042,
+        "actual_usd": 0.015575699999999998,
+        "no_cache_usd": 0.0645645,
+        "savings_usd": 0.0489888,
+        "total_savings_rate": 0.7587575215482193
+      }
     },
     "idle_retention/observational": {
       "logical_requests": 4,
+      "completed": 4,
+      "failed": 0,
       "request_hit_rate": 0.5,
+      "substantive_request_hit_rate": 0.5,
       "substantive_hits": 2,
-      "cost": {
-        "uncached_input_usd": 0.012765,
-        "cached_input_usd": 0.0011136,
-        "actual_input_usd": 0.0138786,
-        "no_cache_input_usd": 0.023901,
-        "input_savings_usd": 0.010022399999999999,
-        "input_savings_rate": 0.41932973515752475,
-        "output_usd": 0.00144,
-        "actual_usd": 0.0153186,
-        "no_cache_usd": 0.025341,
-        "savings_usd": 0.010022399999999999,
-        "total_savings_rate": 0.3955013614300935
-      },
+      "token_weighted_cache_rate": 0.46592192795280535,
+      "prefix_efficiency_p50": 0.9348948495151744,
       "usage": {
         "input_tokens": 31868,
         "cached_tokens": 14848,
@@ -321,8 +313,6 @@
         "reasoning_tokens": 148,
         "total_tokens": 32188
       },
-      "completed": 4,
-      "token_weighted_cache_rate": 0.46592192795280535,
       "timing": {
         "first_event_ms": {
           "count": 4,
@@ -345,27 +335,29 @@
           "p95": 38.28888568051088
         }
       },
-      "prefix_efficiency_p50": 0.9348948495151744,
-      "substantive_request_hit_rate": 0.5,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.012765,
+        "cached_input_usd": 0.0011136,
+        "actual_input_usd": 0.0138786,
+        "no_cache_input_usd": 0.023901,
+        "input_savings_usd": 0.010022399999999999,
+        "input_savings_rate": 0.41932973515752475,
+        "output_usd": 0.00144,
+        "actual_usd": 0.0153186,
+        "no_cache_usd": 0.025341,
+        "savings_usd": 0.010022399999999999,
+        "total_savings_rate": 0.3955013614300935
+      }
     },
     "matched_latency/cold-warm-pair": {
       "logical_requests": 20,
+      "completed": 20,
+      "failed": 0,
       "request_hit_rate": 0.5,
+      "substantive_request_hit_rate": 0.5,
       "substantive_hits": 10,
-      "cost": {
-        "uncached_input_usd": 0.0625575,
-        "cached_input_usd": 0.006048,
-        "actual_input_usd": 0.0686055,
-        "no_cache_input_usd": 0.1230375,
-        "input_savings_usd": 0.054431999999999994,
-        "input_savings_rate": 0.4424017067967083,
-        "output_usd": 0.0190485,
-        "actual_usd": 0.087654,
-        "no_cache_usd": 0.142086,
-        "savings_usd": 0.054431999999999994,
-        "total_savings_rate": 0.38309193023943244
-      },
+      "token_weighted_cache_rate": 0.4915574519963426,
+      "prefix_efficiency_p50": 0.969114289147939,
       "usage": {
         "input_tokens": 164050,
         "cached_tokens": 80640,
@@ -374,8 +366,6 @@
         "reasoning_tokens": 3291,
         "total_tokens": 168283
       },
-      "completed": 20,
-      "token_weighted_cache_rate": 0.4915574519963426,
       "timing": {
         "first_event_ms": {
           "count": 20,
@@ -398,27 +388,29 @@
           "p95": 33.45181445013089
         }
       },
-      "prefix_efficiency_p50": 0.969114289147939,
-      "substantive_request_hit_rate": 0.5,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.0625575,
+        "cached_input_usd": 0.006048,
+        "actual_input_usd": 0.0686055,
+        "no_cache_input_usd": 0.1230375,
+        "input_savings_usd": 0.054431999999999994,
+        "input_savings_rate": 0.4424017067967083,
+        "output_usd": 0.0190485,
+        "actual_usd": 0.087654,
+        "no_cache_usd": 0.142086,
+        "savings_usd": 0.054431999999999994,
+        "total_savings_rate": 0.38309193023943244
+      }
     },
     "prefix_stability/stable-prefix": {
       "logical_requests": 10,
+      "completed": 10,
+      "failed": 0,
       "request_hit_rate": 0.9,
+      "substantive_request_hit_rate": 0.9,
       "substantive_hits": 9,
-      "cost": {
-        "uncached_input_usd": 0.010539,
-        "cached_input_usd": 0.0050976,
-        "actual_input_usd": 0.0156366,
-        "no_cache_input_usd": 0.061515,
-        "input_savings_usd": 0.0458784,
-        "input_savings_rate": 0.7458083394294075,
-        "output_usd": 0.0036,
-        "actual_usd": 0.0192366,
-        "no_cache_usd": 0.065115,
-        "savings_usd": 0.04587840000000001,
-        "total_savings_rate": 0.704574982722875
-      },
+      "token_weighted_cache_rate": 0.8286759326993416,
+      "prefix_efficiency_p50": 0.9099891553199181,
       "usage": {
         "input_tokens": 82020,
         "cached_tokens": 67968,
@@ -427,8 +419,6 @@
         "reasoning_tokens": 350,
         "total_tokens": 82820
       },
-      "completed": 10,
-      "token_weighted_cache_rate": 0.8286759326993416,
       "timing": {
         "first_event_ms": {
           "count": 10,
@@ -451,27 +441,29 @@
           "p95": 27.7506497527401
         }
       },
-      "prefix_efficiency_p50": 0.9099891553199181,
-      "substantive_request_hit_rate": 0.9,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.010539,
+        "cached_input_usd": 0.0050976,
+        "actual_input_usd": 0.0156366,
+        "no_cache_input_usd": 0.061515,
+        "input_savings_usd": 0.0458784,
+        "input_savings_rate": 0.7458083394294075,
+        "output_usd": 0.0036,
+        "actual_usd": 0.0192366,
+        "no_cache_usd": 0.065115,
+        "savings_usd": 0.04587840000000001,
+        "total_savings_rate": 0.704574982722875
+      }
     },
     "prefix_stability/volatile-prefix": {
       "logical_requests": 10,
+      "completed": 10,
+      "failed": 0,
       "request_hit_rate": 0.0,
+      "substantive_request_hit_rate": 0.0,
       "substantive_hits": 0,
-      "cost": {
-        "uncached_input_usd": 0.061755,
-        "cached_input_usd": 0.0,
-        "actual_input_usd": 0.061755,
-        "no_cache_input_usd": 0.061755,
-        "input_savings_usd": 0.0,
-        "input_savings_rate": 0.0,
-        "output_usd": 0.003024,
-        "actual_usd": 0.064779,
-        "no_cache_usd": 0.064779,
-        "savings_usd": 0.0,
-        "total_savings_rate": 0.0
-      },
+      "token_weighted_cache_rate": 0.0,
+      "prefix_efficiency_p50": null,
       "usage": {
         "input_tokens": 82340,
         "cached_tokens": 0,
@@ -480,8 +472,6 @@
         "reasoning_tokens": 222,
         "total_tokens": 83012
       },
-      "completed": 10,
-      "token_weighted_cache_rate": 0.0,
       "timing": {
         "first_event_ms": {
           "count": 10,
@@ -504,27 +494,29 @@
           "p95": 25.79530383182618
         }
       },
-      "prefix_efficiency_p50": null,
-      "substantive_request_hit_rate": 0.0,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.061755,
+        "cached_input_usd": 0.0,
+        "actual_input_usd": 0.061755,
+        "no_cache_input_usd": 0.061755,
+        "input_savings_usd": 0.0,
+        "input_savings_rate": 0.0,
+        "output_usd": 0.003024,
+        "actual_usd": 0.064779,
+        "no_cache_usd": 0.064779,
+        "savings_usd": 0.0,
+        "total_savings_rate": 0.0
+      }
     },
     "qualification/full-prompt": {
       "logical_requests": 3,
+      "completed": 3,
+      "failed": 0,
       "request_hit_rate": 0.6666666666666666,
+      "substantive_request_hit_rate": 0.6666666666666666,
       "substantive_hits": 2,
-      "cost": {
-        "uncached_input_usd": 0.00678525,
-        "cached_input_usd": 0.0011136,
-        "actual_input_usd": 0.007898849999999999,
-        "no_cache_input_usd": 0.01792125,
-        "input_savings_usd": 0.0100224,
-        "input_savings_rate": 0.5592467043314502,
-        "output_usd": 0.0011295,
-        "actual_usd": 0.00902835,
-        "no_cache_usd": 0.019050749999999998,
-        "savings_usd": 0.010022399999999999,
-        "total_savings_rate": 0.5260895240344868
-      },
+      "token_weighted_cache_rate": 0.6213852270349446,
+      "prefix_efficiency_p50": 0.9350125944584383,
       "usage": {
         "input_tokens": 23895,
         "cached_tokens": 14848,
@@ -533,8 +525,6 @@
         "reasoning_tokens": 119,
         "total_tokens": 24146
       },
-      "completed": 3,
-      "token_weighted_cache_rate": 0.6213852270349446,
       "timing": {
         "first_event_ms": {
           "count": 3,
@@ -557,27 +547,29 @@
           "p95": 13.338302015326917
         }
       },
-      "prefix_efficiency_p50": 0.9350125944584383,
-      "substantive_request_hit_rate": 0.6666666666666666,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.00678525,
+        "cached_input_usd": 0.0011136,
+        "actual_input_usd": 0.007898849999999999,
+        "no_cache_input_usd": 0.01792125,
+        "input_savings_usd": 0.0100224,
+        "input_savings_rate": 0.5592467043314502,
+        "output_usd": 0.0011295,
+        "actual_usd": 0.00902835,
+        "no_cache_usd": 0.019050749999999998,
+        "savings_usd": 0.010022399999999999,
+        "total_savings_rate": 0.5260895240344868
+      }
     },
     "qualification/under-threshold": {
       "logical_requests": 3,
+      "completed": 3,
+      "failed": 0,
       "request_hit_rate": 0.0,
+      "substantive_request_hit_rate": 0.0,
       "substantive_hits": 0,
-      "cost": {
-        "uncached_input_usd": 0.00162225,
-        "cached_input_usd": 0.0,
-        "actual_input_usd": 0.00162225,
-        "no_cache_input_usd": 0.00162225,
-        "input_savings_usd": 0.0,
-        "input_savings_rate": 0.0,
-        "output_usd": 0.0003375,
-        "actual_usd": 0.00195975,
-        "no_cache_usd": 0.00195975,
-        "savings_usd": 0.0,
-        "total_savings_rate": 0.0
-      },
+      "token_weighted_cache_rate": 0.0,
+      "prefix_efficiency_p50": null,
       "usage": {
         "input_tokens": 2163,
         "cached_tokens": 0,
@@ -586,8 +578,6 @@
         "reasoning_tokens": 42,
         "total_tokens": 2238
       },
-      "completed": 3,
-      "token_weighted_cache_rate": 0.0,
       "timing": {
         "first_event_ms": {
           "count": 3,
@@ -610,27 +600,29 @@
           "p95": 85.17172815627417
         }
       },
-      "prefix_efficiency_p50": null,
-      "substantive_request_hit_rate": 0.0,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.00162225,
+        "cached_input_usd": 0.0,
+        "actual_input_usd": 0.00162225,
+        "no_cache_input_usd": 0.00162225,
+        "input_savings_usd": 0.0,
+        "input_savings_rate": 0.0,
+        "output_usd": 0.0003375,
+        "actual_usd": 0.00195975,
+        "no_cache_usd": 0.00195975,
+        "savings_usd": 0.0,
+        "total_savings_rate": 0.0
+      }
     },
     "tool_schema_stability/canonical": {
       "logical_requests": 10,
+      "completed": 10,
+      "failed": 0,
       "request_hit_rate": 0.9,
+      "substantive_request_hit_rate": 0.9,
       "substantive_hits": 9,
-      "cost": {
-        "uncached_input_usd": 0.007203,
-        "cached_input_usd": 0.0054432,
-        "actual_input_usd": 0.0126462,
-        "no_cache_input_usd": 0.061635,
-        "input_savings_usd": 0.0489888,
-        "input_savings_rate": 0.7948211243611584,
-        "output_usd": 0.003393,
-        "actual_usd": 0.0160392,
-        "no_cache_usd": 0.065028,
-        "savings_usd": 0.0489888,
-        "total_savings_rate": 0.7533493264439933
-      },
+      "token_weighted_cache_rate": 0.8831345826235094,
+      "prefix_efficiency_p50": 0.9698135898977751,
       "usage": {
         "input_tokens": 82180,
         "cached_tokens": 72576,
@@ -639,8 +631,6 @@
         "reasoning_tokens": 284,
         "total_tokens": 82934
       },
-      "completed": 10,
-      "token_weighted_cache_rate": 0.8831345826235094,
       "timing": {
         "first_event_ms": {
           "count": 10,
@@ -663,27 +653,29 @@
           "p95": 26.656526752944604
         }
       },
-      "prefix_efficiency_p50": 0.9698135898977751,
-      "substantive_request_hit_rate": 0.9,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.007203,
+        "cached_input_usd": 0.0054432,
+        "actual_input_usd": 0.0126462,
+        "no_cache_input_usd": 0.061635,
+        "input_savings_usd": 0.0489888,
+        "input_savings_rate": 0.7948211243611584,
+        "output_usd": 0.003393,
+        "actual_usd": 0.0160392,
+        "no_cache_usd": 0.065028,
+        "savings_usd": 0.0489888,
+        "total_savings_rate": 0.7533493264439933
+      }
     },
     "tool_schema_stability/shuffled": {
       "logical_requests": 10,
+      "completed": 10,
+      "failed": 0,
       "request_hit_rate": 0.4,
+      "substantive_request_hit_rate": 0.4,
       "substantive_hits": 4,
-      "cost": {
-        "uncached_input_usd": 0.037323,
-        "cached_input_usd": 0.0024192,
-        "actual_input_usd": 0.039742200000000005,
-        "no_cache_input_usd": 0.061515,
-        "input_savings_usd": 0.021772799999999995,
-        "input_savings_rate": 0.3539429407461594,
-        "output_usd": 0.003141,
-        "actual_usd": 0.0428832,
-        "no_cache_usd": 0.064656,
-        "savings_usd": 0.021772800000000002,
-        "total_savings_rate": 0.33674832962138085
-      },
+      "token_weighted_cache_rate": 0.3932699341623994,
+      "prefix_efficiency_p50": 0.9716833353416074,
       "usage": {
         "input_tokens": 82020,
         "cached_tokens": 32256,
@@ -692,8 +684,6 @@
         "reasoning_tokens": 268,
         "total_tokens": 82718
       },
-      "completed": 10,
-      "token_weighted_cache_rate": 0.3932699341623994,
       "timing": {
         "first_event_ms": {
           "count": 10,
@@ -716,27 +706,29 @@
           "p95": 34.72459446728373
         }
       },
-      "prefix_efficiency_p50": 0.9716833353416074,
-      "substantive_request_hit_rate": 0.4,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.037323,
+        "cached_input_usd": 0.0024192,
+        "actual_input_usd": 0.039742200000000005,
+        "no_cache_input_usd": 0.061515,
+        "input_savings_usd": 0.021772799999999995,
+        "input_savings_rate": 0.3539429407461594,
+        "output_usd": 0.003141,
+        "actual_usd": 0.0428832,
+        "no_cache_usd": 0.064656,
+        "savings_usd": 0.021772800000000002,
+        "total_savings_rate": 0.33674832962138085
+      }
     },
     "traffic_shape/burst": {
       "logical_requests": 6,
+      "completed": 6,
+      "failed": 0,
       "request_hit_rate": 0.3333333333333333,
+      "substantive_request_hit_rate": 0.3333333333333333,
       "substantive_hits": 2,
-      "cost": {
-        "uncached_input_usd": 0.02484,
-        "cached_input_usd": 0.0012096,
-        "actual_input_usd": 0.0260496,
-        "no_cache_input_usd": 0.036936,
-        "input_savings_usd": 0.010886399999999997,
-        "input_savings_rate": 0.29473684210526313,
-        "output_usd": 0.0020655,
-        "actual_usd": 0.0281151,
-        "no_cache_usd": 0.039001499999999995,
-        "savings_usd": 0.010886399999999994,
-        "total_savings_rate": 0.2791277258566977
-      },
+      "token_weighted_cache_rate": 0.32748538011695905,
+      "prefix_efficiency_p50": 0.9709813365442505,
       "usage": {
         "input_tokens": 49248,
         "cached_tokens": 16128,
@@ -745,8 +737,6 @@
         "reasoning_tokens": 183,
         "total_tokens": 49707
       },
-      "completed": 6,
-      "token_weighted_cache_rate": 0.32748538011695905,
       "timing": {
         "first_event_ms": {
           "count": 6,
@@ -769,27 +759,29 @@
           "p95": 27.9811602332092
         }
       },
-      "prefix_efficiency_p50": 0.9709813365442505,
-      "substantive_request_hit_rate": 0.3333333333333333,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.02484,
+        "cached_input_usd": 0.0012096,
+        "actual_input_usd": 0.0260496,
+        "no_cache_input_usd": 0.036936,
+        "input_savings_usd": 0.010886399999999997,
+        "input_savings_rate": 0.29473684210526313,
+        "output_usd": 0.0020655,
+        "actual_usd": 0.0281151,
+        "no_cache_usd": 0.039001499999999995,
+        "savings_usd": 0.010886399999999994,
+        "total_savings_rate": 0.2791277258566977
+      }
     },
     "traffic_shape/paced": {
       "logical_requests": 6,
+      "completed": 6,
+      "failed": 0,
       "request_hit_rate": 0.8333333333333334,
+      "substantive_request_hit_rate": 0.8333333333333334,
       "substantive_hits": 5,
-      "cost": {
-        "uncached_input_usd": 0.0066555,
-        "cached_input_usd": 0.003024,
-        "actual_input_usd": 0.0096795,
-        "no_cache_input_usd": 0.0368955,
-        "input_savings_usd": 0.027215999999999997,
-        "input_savings_rate": 0.7376509330406147,
-        "output_usd": 0.0019575,
-        "actual_usd": 0.011637000000000002,
-        "no_cache_usd": 0.038853,
-        "savings_usd": 0.027215999999999997,
-        "total_savings_rate": 0.700486448922863
-      },
+      "token_weighted_cache_rate": 0.8196121478229053,
+      "prefix_efficiency_p50": 0.9719175605640593,
       "usage": {
         "input_tokens": 49194,
         "cached_tokens": 40320,
@@ -798,8 +790,6 @@
         "reasoning_tokens": 171,
         "total_tokens": 49629
       },
-      "completed": 6,
-      "token_weighted_cache_rate": 0.8196121478229053,
       "timing": {
         "first_event_ms": {
           "count": 6,
@@ -822,9 +812,19 @@
           "p95": 36.88580289948732
         }
       },
-      "prefix_efficiency_p50": 0.9719175605640593,
-      "substantive_request_hit_rate": 0.8333333333333334,
-      "failed": 0
+      "cost": {
+        "uncached_input_usd": 0.0066555,
+        "cached_input_usd": 0.003024,
+        "actual_input_usd": 0.0096795,
+        "no_cache_input_usd": 0.0368955,
+        "input_savings_usd": 0.027215999999999997,
+        "input_savings_rate": 0.7376509330406147,
+        "output_usd": 0.0019575,
+        "actual_usd": 0.011637000000000002,
+        "no_cache_usd": 0.038853,
+        "savings_usd": 0.027215999999999997,
+        "total_savings_rate": 0.700486448922863
+      }
     }
   },
   "root_causes": [

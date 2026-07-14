@@ -1701,7 +1701,7 @@ def build_summary(
 
 
 def _safe_metric(metric: Mapping[str, Any]) -> dict[str, Any]:
-    allowed = {
+    allowed = (
         "logical_requests",
         "completed",
         "failed",
@@ -1713,7 +1713,7 @@ def _safe_metric(metric: Mapping[str, Any]) -> dict[str, Any]:
         "usage",
         "timing",
         "cost",
-    }
+    )
     return {
         key: metric.get(key)
         for key in allowed
