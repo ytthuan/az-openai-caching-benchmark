@@ -1,264 +1,82 @@
-# Azure OpenAI Prompt Cache Benchmark
+# Công cụ đo hiệu quả Prompt Cache của Azure OpenAI
 
-Standalone internal benchmark for Azure OpenAI v1 Responses API prompt caching with deployment default `gpt-5.4-mini`.
+Đây là **benchmark** nội bộ độc lập, tức chương trình tạo một khối lượng yêu cầu có kiểm soát để đo và so sánh, dành cho **Azure OpenAI Responses API v1**. Responses API là giao diện lập trình ứng dụng dùng để gửi dữ liệu đầu vào và nhận nội dung do mô hình tạo ra; `v1` là phiên bản đường dẫn API. Mô hình triển khai mặc định là `gpt-5.4-mini`.
 
-Scope is cache efficiency only:
+Công cụ chỉ đánh giá hiệu quả **prompt cache**. Prompt cache là cơ chế Azure OpenAI tái sử dụng phép tính cho phần đầu giống hệt nhau của nhiều prompt. Prompt là toàn bộ chỉ dẫn và dữ liệu đầu vào gửi cho mô hình. Cơ chế này khác **response cache**: hệ thống không lưu nguyên câu trả lời cũ; phần dữ liệu thay đổi vẫn được xử lý và mô hình vẫn tạo câu trả lời mới.
 
-- terminal `usage.input_tokens_details.cached_tokens`;
-- streaming first-event, first-text, TTLT and estimated TBT;
-- dynamic Azure Retail Prices API lookup for uncached input, cached input and output;
-- cold/warm controls and A/B isolation for prefix volatility, tool/schema churn, cache-key cardinality and traffic shape;
-- ten namespace-isolated matched latency pairs;
-- reproducible cache/cost/reliability report.
+Phạm vi đo gồm:
 
-Prompt caching reuses computation for identical prompt prefixes. It is not response caching: dynamic tail still runs and model still generates output.
+- số token đầu vào được tái sử dụng, đọc từ `usage.input_tokens_details.cached_tokens`;
+- thời gian phản hồi khi nhận dữ liệu theo luồng: đến sự kiện đầu tiên, đến chữ đầu tiên, đến chữ cuối cùng (TTLT) và khoảng ngắt giữa các đoạn chữ (TBT);
+- giá công khai hiện hành từ Azure Retail Prices API cho token đầu vào thường, token đầu vào được cache và token đầu ra;
+- so sánh yêu cầu cold/warm và A/B để cô lập ảnh hưởng của phần đầu prompt, công cụ, schema, cache key và nhịp gửi yêu cầu;
+- mười cặp đo độ trễ cold/warm, mỗi cặp dùng namespace riêng;
+- báo cáo có thể tái tạo về cache, chi phí và độ tin cậy.
 
-## Repository
+## Bạn nhận được gì từ một lần chạy
 
-| Path | Purpose |
-| --- | --- |
-| `benchmark.py` | CLI, streaming Responses runner, shared HTTP-attempt budget, pricing lookup and artifact I/O |
-| `benchmark_core.py` | Prompt/suite construction, validation, metrics, acceptance, report and sample sanitization |
-| `prompts/enterprise_agent_creator_system_prompt_vi.md` | Long Vietnamese synthetic enterprise system prompt with stable-prefix/dynamic-tail boundary |
-| `tests/` | Unit tests; no model calls |
-| `GUIDE_VI.md` | Detailed benchmark and production implementation guide |
-| `examples/` | Allowlisted aggregate sample from one real live run |
-| `runs/` | Local raw run artifacts; ignored by Git |
+Mỗi lần chạy tạo `runs/<run-id>/report.md` trả lời bốn câu hỏi:
 
-## Setup
+1. **Endpoint của bạn có cache thật không?** Đọc trực tiếp từ `cached_tokens` do dịch vụ trả về, không suy diễn từ tốc độ phản hồi.
+2. **Cấu hình đúng thì tiết kiệm bao nhiêu?** Run mẫu: nhóm cấu hình đúng đạt 96.8% token được cache, giảm 87.1% chi phí input và 80.6% tổng chi phí.
+3. **Nếu cache kém thì vì cái gì?** Benchmark cố ý phá cache theo bốn cách (phần đầu prompt bất ổn, tool schema đổi, cache key sai, gửi dồn dập) để chỉ đích danh nguyên nhân và việc cần sửa trong hệ thống của bạn.
+4. **Cache có làm nhanh hơn không?** Đo bằng mười cặp yêu cầu cold/warm giống hệt từng byte; báo cáo chỉ kết luận khi số đo đủ chuẩn.
+
+Cách đọc từng con số và quy đổi mức tiết kiệm sang lưu lượng thật của bạn: [PLAYBOOK, phần A](docs/PLAYBOOK_VI.md). Báo cáo mẫu từ một lần chạy thật: [examples/sample-report.md](examples/sample-report.md).
+
+## Cài đặt
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -e ".[dev]"
 cp .env.example .env
 ```
 
-Only these dotenv keys are read:
+Chương trình chỉ đọc hai **biến môi trường**, tức cặp tên/giá trị cấu hình được cung cấp cho tiến trình, từ `.env`:
 
 ```dotenv
-OPENAI_BASER_URL="https://<resource>.openai.azure.com/openai/v1/"
 OPENAI_BASE_URL="https://<resource>.openai.azure.com/openai/v1/"
 OPENAI_API_KEY=""
 ```
 
-Rules:
+`OPENAI_BASE_URL` là địa chỉ gốc của Azure OpenAI Responses API v1 — bắt buộc HTTPS, không chấp nhận query/fragment hay URL kiểu deployment. `OPENAI_API_KEY` là khóa xác thực; không ghi khóa thật vào Git. Quy tắc URL đầy đủ và các lỗi cấu hình thường gặp: [PLAYBOOK, phần B.2](docs/PLAYBOOK_VI.md).
 
-- process environment wins over `.env` for each key;
-- `OPENAI_BASER_URL` wins over `OPENAI_BASE_URL` when both are present;
-- remote endpoints require HTTPS;
-- HTTP is accepted only for loopback proxies;
-- query, fragment, user information and deployment-specific URL forms are rejected;
-- resource roots are normalized to `/openai/v1/`;
-- `.env` and `runs/` are Git-ignored.
-
-Use an external secure env file without copying it:
+Sau khi cài có ba entrypoint tương đương:
 
 ```bash
-.venv/bin/python benchmark.py live \
-  --confirm-live \
-  --env-file /secure/path/benchmark.env
+.venv/bin/azure-openai-cache-benchmark --help
+.venv/bin/python -m azure_openai_cache_benchmark --help
+.venv/bin/python benchmark.py --help
 ```
 
-## Workflow
+Console script và `python -m` lấy `.env` và `runs/` mặc định theo thư mục làm việc hiện tại; launcher `benchmark.py` luôn theo thư mục repository. Các flag `--env-file` và `--output-root` ghi đè được.
 
-### 1. Compile and test
+## Bắt đầu nhanh
 
 ```bash
-.venv/bin/python -m py_compile benchmark.py benchmark_core.py
-.venv/bin/python -m unittest discover -s tests -v
+# 1. Kiểm thử offline — không gọi mạng
+.venv/bin/python -m unittest discover -s tests
+
+# 2. Dry-run — validate 102 yêu cầu + trần chi phí, không gọi mô hình
+.venv/bin/azure-openai-cache-benchmark dry-run
+
+# 3. Chạy thật — phát sinh chi phí; duyệt trần chi phí ở bước 2 trước
+.venv/bin/azure-openai-cache-benchmark live --confirm-live
+
+# 4. Đọc kết quả
+open runs/<run-id>/report.md
 ```
 
-### 2. Dry-run and cost preflight
+Model khác `gpt-5.4-mini` cần `--skip-pricing` hoặc ghi đè đồng thời cả ba mức giá. Quy trình đầy đủ từng bước — bảng flag, probe, xử lý lỗi, tạo lại báo cáo ngoại tuyến, xuất mẫu chia sẻ an toàn — nằm trong [PLAYBOOK, phần B](docs/PLAYBOOK_VI.md).
 
-```bash
-.venv/bin/python benchmark.py dry-run
-```
+## Đọc gì ở đâu
 
-Dry-run:
-
-- does not call model;
-- validates exact 102-request allocation and order;
-- validates exact 44-request optimized cohort;
-- validates ten adjacent cold/warm pairs, unique pair namespaces/keys and byte-identical payload per pair;
-- validates prompt boundary and hard cap;
-- queries Azure Retail Prices API unless `--skip-pricing`;
-- writes `runs/<dry-run-id>/manifest.json` with conservative no-cache ceiling for all 120 possible HTTP attempts.
-
-For private or enterprise rates, override all three prices in USD/1M tokens:
-
-```bash
-.venv/bin/python benchmark.py dry-run \
-  --input-price 0.75 \
-  --cached-input-price 0.075 \
-  --output-price 4.50
-```
-
-Partial override is rejected. `--skip-pricing` renders cost as `n/a`, never as zero.
-
-### 3. Live run
-
-```bash
-.venv/bin/python benchmark.py live --confirm-live
-```
-
-Live sequence:
-
-1. Run three-call capability/isolation probe: A-cold, B-cold, A-warm.
-2. Run 102 planned requests.
-3. Allow bounded retry only for transient request failures; matched latency and concurrent burst members do not retry.
-4. Claim the same atomic budget before every HTTP attempt.
-5. Stop fail-closed at hard cap 120.
-6. Finalize manifest, summary, CSV and report even when run ends incomplete.
-
-SDK internal retries are disabled. Default idle-retention wait is 660 seconds. A reduced value is useful for harness checks but not retention conclusions:
-
-```bash
-.venv/bin/python benchmark.py live \
-  --confirm-live \
-  --idle-gap-seconds 30
-```
-
-### 4. Offline report rebuild
-
-```bash
-.venv/bin/python benchmark.py report runs/<run-id>
-```
-
-Rebuild reads only:
-
-- `manifest.json`;
-- `requests.jsonl`.
-
-It does not call model or Azure Retail Prices API. The pricing snapshot and completion timestamp come from manifest, so repeated rebuilds are deterministic.
-
-### 5. Sanitized sample generation
-
-```bash
-.venv/bin/python benchmark.py sample \
-  runs/<live-run-id>/summary.json \
-  --output-dir examples
-```
-
-The explicit allowlist preserves aggregate cache, cost, latency, root-cause, prompt, pricing and provenance data. It excludes endpoint fingerprint, raw prompt/input/output, response/request IDs, error-attempt ledger and claim records.
-
-## Suite allocation
-
-| Experiment | Requests | Design |
-| --- | ---: | --- |
-| `qualification` | 6 | three under-threshold controls; full prompt cold + two warm |
-| `prefix_stability` | 20 | ten volatile-prefix; stable-prefix cold + nine warm |
-| `tool_schema_stability` | 20 | ten shuffled; canonical cold + nine warm |
-| `cache_key_cardinality` | 20 | ten per-request-key; stable-key cold + nine warm |
-| `traffic_shape` | 12 | burst cold + five concurrent warm; paced cold + five warm |
-| `matched_latency` | 20 | ten unique cold/warm pairs |
-| `idle_retention` | 4 | seed, immediate warm, post-idle, rewarm |
-| **Total** | **102** | hard cap remains 120 |
-
-Optimized cohort is exactly 44 warm requests:
-
-- qualification full-prompt warm: 2;
-- stable-prefix steady: 9;
-- canonical steady: 9;
-- stable-key steady: 9;
-- paced steady: 5;
-- matched-latency warm: 10.
-
-Cold seeds, degraded diagnostic arms and idle-retention requests are excluded from optimized acceptance.
-
-## Matched latency
-
-Each of ten pairs has a unique:
-
-- `pair_id`;
-- namespace embedded in instructions;
-- `prompt_cache_key`.
-
-Within one pair, instructions, input, tools, text config, cache key and fixed `max_output_tokens` are byte-identical. A pair is valid only when:
-
-- cold completed without retry and `cached_tokens == 0`;
-- warm completed without retry;
-- warm has at least 1,024 cached tokens;
-- warm cached tokens are at least 80% of estimated cacheable prefix.
-
-Latency result is directional. Report always sets `causal_latency_claimed=false`.
-
-## Metrics
-
-```text
-request_hit_rate =
-  completed_requests(cached_tokens > 0) / completed_requests
-
-substantive_request_hit_rate =
-  completed_requests(cached_tokens >= 1,024
-    and cached_tokens / estimated_cacheable_prefix >= 80%)
-  / completed_requests
-
-token_weighted_cache_rate =
-  sum(cached_tokens) / sum(input_tokens)
-
-actual_cost =
-  uncached_input_tokens × input_rate
-  + cached_tokens × cached_input_rate
-  + output_tokens × output_rate
-
-input_savings_rate =
-  input_savings_usd / no_cache_input_cost_usd
-
-total_savings_rate =
-  total_savings_usd / no_cache_total_cost_usd
-```
-
-`input_tokens` includes cached tokens. Reasoning tokens are already included in output tokens and are not charged twice.
-
-Streaming timing:
-
-- first event: first stream event after request start;
-- first text: first non-empty output text delta;
-- TTLT: request start through terminal `response.completed`;
-- TBT: `(terminal - first text) / (visible output token estimate - 1)`.
-
-## Interpretation
-
-Three scopes must remain separate:
-
-- **overall**: all final logical requests, including capability probe and cold seeds;
-- **optimized**: 44 production-like warm requests and only acceptance denominator;
-- **degraded**: deliberately unstable A/B arms used for diagnosis.
-
-Acceptance passes only when:
-
-- all 44 optimized requests complete with zero final failure;
-- optimized substantive request hit rate is at least 90%;
-- optimized token-weighted cache rate is at least 80%, or p50 prefix efficiency is at least 90%.
-
-Root-cause factor is `supported` only when stable-versus-degraded token-weighted delta is at least 10 percentage points and both sides have at least five completed steady samples.
-
-## Artifacts
-
-Raw local run:
-
-| File | Schema |
+| Nhu cầu | Tài liệu |
 | --- | --- |
-| `manifest.json` | mode, model, prompt hash/size/boundary, exact suite allocation, hashed request plan, price snapshot, endpoint fingerprint, execution state and hard-cap ledger |
-| `requests.jsonl` | one row per HTTP attempt with logical ID, hashes, expected/observed cache state, terminal usage, cost, streaming timing and redacted error |
-| `summary.json` | aggregate scopes, arms, root causes, matched latency, acceptance, prompt/pricing provenance |
-| `summary.csv` | one row per experiment/arm |
-| `report.md` | Vietnamese benchmark and system-prompt cache deployment report |
-
-Raw artifacts can contain service-generated identifiers and must remain under ignored `runs/`. Committed examples are sanitized aggregates only.
-
-## Limitations
-
-- Cache retention is service-managed and can change with inactivity, load and deployment topology.
-- `prompt_cache_key` influences routing but does not replace exact prefix match.
-- Synthetic 102-request result does not guarantee production traffic uplift.
-- Failed attempts without terminal usage can still incur service cost; report cannot infer unknown usage.
-- Retail Prices API returns public list prices, not negotiated billing.
-- Latency varies with model load and generated tokens; matched pairs reduce confounding but do not prove causality.
-
-## Official sources
-
-- https://learn.microsoft.com/azure/ai-services/openai/how-to/prompt-caching
-- https://learn.microsoft.com/azure/ai-services/openai/how-to/responses
-- https://learn.microsoft.com/azure/ai-services/openai/how-to/latency
-- https://prices.azure.com/api/retail/prices
+| Chạy benchmark với endpoint thật từng bước; xử lý lỗi | [PLAYBOOK — phần B](docs/PLAYBOOK_VI.md) |
+| Đọc và diễn giải báo cáo; schema tệp kết quả; bẫy đọc sai | [PLAYBOOK — phần A](docs/PLAYBOOK_VI.md) |
+| Test với system prompt riêng của khách hàng | [PLAYBOOK — phần C](docs/PLAYBOOK_VI.md) |
+| Cải thiện cache efficiency cho hệ thống agent | [PLAYBOOK — phần D](docs/PLAYBOOK_VI.md) và [GUIDE mục 15–21](GUIDE_VI.md) |
+| Cơ chế prompt cache; thiết kế suite; công thức chỉ số; acceptance; giới hạn | [GUIDE_VI.md](GUIDE_VI.md) |
+| Số liệu mẫu thật đã làm sạch | [examples/sample-report.md](examples/sample-report.md) |
+| Tài liệu chính thức của Microsoft | mục "Nguồn chính thức" cuối [GUIDE_VI.md](GUIDE_VI.md) |

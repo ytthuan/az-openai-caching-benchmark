@@ -20,9 +20,9 @@ Overall gồm cold seeds và 3 capability/isolation calls. Optimized chỉ gồm
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -e ".[dev]"
 cp .env.example .env
-.venv/bin/python benchmark.py dry-run
+.venv/bin/azure-openai-cache-benchmark dry-run
 ```
 
 Dry-run validate prompt boundary, exact allocation 102, optimized cohort 44, 10 pair identities, hard cap 120 và cost ceiling. Dry-run không gọi model; mặc định chỉ gọi Azure Retail Prices API để lấy ba meter.
@@ -50,8 +50,8 @@ Valid pairs: 10/10. Warm-faster TTLT: 2; cold-faster TTLT: 8; median warm-minus-
 ### 4. Lệnh chạy và rebuild
 
 ```bash
-.venv/bin/python benchmark.py live --confirm-live
-.venv/bin/python benchmark.py report runs/<run-id>
+.venv/bin/azure-openai-cache-benchmark live --confirm-live
+.venv/bin/python -m azure_openai_cache_benchmark report runs/<run-id>
 ```
 
 Live chạy 3 probe calls trước 102 planned requests. Mọi HTTP attempt, kể cả bounded retry, claim cùng atomic hard cap 120 trước khi gọi. SDK internal retry bị tắt. `report` chỉ đọc `manifest.json` và `requests.jsonl`; không gọi model hay price API.
@@ -144,10 +144,7 @@ import os
 from openai import OpenAI
 
 client = OpenAI(
-    base_url=(
-        os.environ.get("OPENAI_BASER_URL")
-        or os.environ["OPENAI_BASE_URL"]
-    ),
+    base_url=os.environ["OPENAI_BASE_URL"],
     api_key=os.environ["OPENAI_API_KEY"],
     max_retries=0,
 )

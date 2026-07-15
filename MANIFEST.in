@@ -1,0 +1,9 @@
+include .env.example
+include benchmark.py
+include GUIDE_VI.md
+include README.md
+include requirements.txt
+recursive-include docs *.md
+recursive-include examples *.json *.md
+recursive-include src/azure_openai_cache_benchmark/prompts *.md
+recursive-include tests *.py

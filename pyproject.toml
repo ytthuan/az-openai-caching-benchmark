@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "azure-openai-cache-benchmark"
+version = "0.1.0"
+description = "Benchmark hiệu quả prompt cache của Azure OpenAI Responses API"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Azure OpenAI Cache Benchmark contributors" }]
+dynamic = ["dependencies"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: System :: Benchmark",
+]
+
+[project.optional-dependencies]
+dev = ["build>=1.2.2,<2.0.0"]
+
+[project.scripts]
+azure-openai-cache-benchmark = "azure_openai_cache_benchmark.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.package-data]
+azure_openai_cache_benchmark = ["prompts/*.md"]
