@@ -75,7 +75,7 @@ Model khác `gpt-5.4-mini` cần `--skip-pricing` hoặc ghi đè đồng thời
 | --- | --- |
 | Chạy benchmark với endpoint thật từng bước; xử lý lỗi | [PLAYBOOK — phần B](docs/PLAYBOOK_VI.md) |
 | Đọc và diễn giải báo cáo; schema tệp kết quả; bẫy đọc sai | [PLAYBOOK — phần A](docs/PLAYBOOK_VI.md) |
-| Test với system prompt riêng của khách hàng | [PLAYBOOK — phần C](docs/PLAYBOOK_VI.md) |
+| Test với system prompt riêng của bạn | [PLAYBOOK — phần C](docs/PLAYBOOK_VI.md) |
 | Cải thiện cache efficiency cho hệ thống agent | [PLAYBOOK — phần D](docs/PLAYBOOK_VI.md) và [GUIDE mục 15–21](GUIDE_VI.md) |
 | Cơ chế prompt cache; thiết kế suite; công thức chỉ số; acceptance; giới hạn | [GUIDE_VI.md](GUIDE_VI.md) |
 | Số liệu mẫu thật đã làm sạch | [examples/sample-report.md](examples/sample-report.md) |

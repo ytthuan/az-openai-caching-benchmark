@@ -3,8 +3,8 @@
 Tài liệu tham chiếu cho người vận hành và cho hệ thống agent. Bốn phần:
 
 - **Phần A** — cách đọc báo cáo và toàn bộ tệp kết quả;
-- **Phần B** — quy trình từng bước test với endpoint của khách hàng;
-- **Phần C** — ba con đường test với system prompt của khách hàng;
+- **Phần B** — quy trình từng bước chạy benchmark trên endpoint của bạn;
+- **Phần C** — ba con đường test với system prompt riêng của bạn;
 - **Phần D** — checklist cải thiện cache efficiency cho hệ thống agent.
 
 Thuật ngữ kỹ thuật được giải thích tại chỗ khi xuất hiện lần đầu. Cơ chế đo và
@@ -119,7 +119,7 @@ Trạng thái run: `completed`. Acceptance cache-only: **pass**.
 - `causal_latency_claimed=false` — benchmark từ chối tuyên bố quan hệ nhân quả
   về latency: tải server, routing và số token sinh ra là nhiễu chưa kiểm soát.
   Latency ở đây chỉ mang tính định hướng (directional). **Không** dùng con số
-  này để hứa hẹn "cache nhanh hơn X ms" với khách.
+  này để cam kết "cache nhanh hơn X ms".
 
 **Mục "Pricing và cost guard"** — ba đơn giá theo USD/1M token (uncached input,
 cached input, output), nguồn và thời điểm lấy giá, chi phí thực tế và chi phí
@@ -301,44 +301,50 @@ không"** — đừng nhầm hai tầng này khi viết automation.
 
 ### A.7 Bẫy đọc sai thường gặp
 
-1. **Request hit rate cao ≠ tiết kiệm tiền.** 100 request đều trúng 10 token
-   cache vẫn gần như không giảm chi phí. Luôn đối chiếu
-   `token_weighted_cache_rate`.
-2. **Lấy Overall làm KPI.** Overall chứa cold seeds và degraded arms theo thiết
-   kế — nó *phải* thấp. KPI đúng là khối Optimized.
-3. **Đọc input savings thành total savings.** Hai mẫu số khác nhau; total luôn
-   thấp hơn vì output không cache được.
-4. **Diễn giải nhân quả cho latency.** `causal_latency_claimed=false`; median
-   warm-minus-cold dương trong mẫu thật (+482 ms) nhắc rằng cache **không**
-   được phép bán như tính năng giảm latency.
-5. **Coi `not_observed` là "đã kiểm chứng an toàn".** Nó chỉ nghĩa là run này
-   không thấy chênh lệch đủ lớn.
-6. **So sánh chi phí giữa hai run có pricing snapshot khác nhau.** Giá bán lẻ
-   lấy tại thời điểm chạy (`retrieved_at` trong pricing provenance); so sánh
-   tiền chỉ hợp lệ khi cùng đơn giá.
-7. **Quên rằng `input_tokens` đã bao gồm `cached_tokens`.** Không cộng hai số
-   này với nhau; phần phải trả giá đầy đủ là `uncached_input_tokens`.
+1. **Request hit rate cao không đồng nghĩa tiết kiệm tiền.** 100 request đều
+   trúng cache nhưng mỗi request chỉ trúng 10 token thì chi phí gần như không
+   giảm. Hãy đối chiếu với `token_weighted_cache_rate` trước khi kết luận.
+2. **Đừng lấy khối Overall làm KPI.** Overall chứa cold seeds và degraded arms
+   theo thiết kế nên nó *phải* thấp; KPI đúng nằm ở khối Optimized.
+3. **Đừng đọc input savings thành total savings.** Hai tỷ lệ này có mẫu số khác
+   nhau; total luôn thấp hơn vì output token không cache được.
+4. **Đừng diễn giải latency theo hướng nhân quả.** Report đặt
+   `causal_latency_claimed=false`, và trong run mẫu median warm-minus-cold còn
+   dương (+482 ms). Cache giúp giảm chi phí; đừng dựa vào nó để kỳ vọng phản
+   hồi nhanh hơn.
+5. **`not_observed` không có nghĩa là "đã kiểm chứng an toàn".** Nó chỉ cho
+   biết run này không thấy chênh lệch đủ lớn ở factor đó.
+6. **Đừng so sánh chi phí giữa hai run có pricing snapshot khác nhau.** Giá bán
+   lẻ được chốt tại thời điểm chạy (`retrieved_at` trong pricing provenance);
+   so sánh tiền chỉ hợp lệ khi hai run dùng cùng đơn giá.
+7. **`input_tokens` đã bao gồm `cached_tokens`.** Đừng cộng hai số này với
+   nhau; phần bạn trả giá đầy đủ là `uncached_input_tokens`.
 
 ### A.8 Checklist đọc nhanh (5 phút)
 
-1. `run_status` = `completed`? Nếu `incomplete` → xem `fatal_error`, dừng.
-2. `acceptance.status` = `pass`?
-3. Optimized: `substantive_request_hit_rate`, `token_weighted_cache_rate`,
-   `prefix_efficiency_p50` so với ngưỡng 90% / 80% / 90%.
-4. `records.attempt_records` ≤ 120 và `final_logical_requests` = 105.
-5. `matched_latency.valid_pairs` — bao nhiêu /10; lý do loại nếu < 10.
-6. `root_causes` — factor nào `supported` với delta lớn nhất.
-7. Pricing available hay skipped; nếu available: actual so với no-cache.
+1. `run_status` có bằng `completed` không? Nếu `incomplete`, xem `fatal_error`
+   và dừng ở đây.
+2. `acceptance.status` có bằng `pass` không?
+3. Ba chỉ số khối Optimized — `substantive_request_hit_rate`,
+   `token_weighted_cache_rate`, `prefix_efficiency_p50` — có đạt ngưỡng
+   90% / 80% / 90% không?
+4. `records.attempt_records` có ≤ 120 và `final_logical_requests` có bằng 105
+   không?
+5. `matched_latency.valid_pairs` được bao nhiêu trên 10? Nếu dưới 10, đọc lý do
+   loại cặp.
+6. Trong `root_causes`, factor nào `supported` và factor nào có delta lớn nhất?
+7. Pricing là `available` hay `skipped`? Nếu `available`, so `actual` với
+   `no-cache` để thấy mức tiết kiệm.
 
 ---
 
-## Phần B. Test với endpoint của khách hàng — từng bước
+## Phần B. Chạy benchmark trên endpoint của bạn — từng bước
 
 ### B.0 Chuẩn bị và cảnh báo
 
 Cần trước khi bắt đầu:
 
-- Azure OpenAI resource của khách có deployment model (mặc định benchmark là
+- Azure OpenAI resource của bạn có deployment model (mặc định benchmark là
   `gpt-5.4-mini`) và API key còn hiệu lực;
 - quota TPM/RPM (token/request mỗi phút) đủ cho ~105 lần gọi, trong đó có một
   đợt 5 lần gọi đồng thời (arm burst);
@@ -346,11 +352,11 @@ Cần trước khi bắt đầu:
 
 Cảnh báo vận hành:
 
-- Live run **tốn tiền thật** trên subscription của khách. Luôn dry-run trước
-  để xem trần chi phí (cost envelope), và chỉ chạy live khi khách xác nhận.
+- Live run **tốn tiền thật** trên subscription của bạn. Luôn dry-run trước
+  để xem trần chi phí (cost envelope), duyệt con số đó rồi mới chạy live.
 - Run kéo dài: riêng kịch bản idle-retention chờ **660 giây**, cộng thời gian
   của 105 lần gọi — dự trù hàng chục phút, giữ máy không sleep.
-- Không nhập dữ liệu thật của khách vào bất kỳ payload nào; benchmark chỉ dùng
+- Không đưa dữ liệu thật vào bất kỳ payload nào; benchmark chỉ dùng
   prompt đóng gói sẵn và input tổng hợp.
 
 ### B.1 Cài đặt môi trường
@@ -382,7 +388,7 @@ Chỉ hai biến môi trường được đọc (allowlist cứng):
 cp .env.example .env
 # .env:
 OPENAI_BASE_URL="https://<resource>.openai.azure.com/openai/v1/"
-OPENAI_API_KEY="<key của khách>"
+OPENAI_API_KEY="<key của bạn>"
 ```
 
 Quy tắc URL được kiểm tra chặt — các lỗi hay gặp:
@@ -396,10 +402,10 @@ Quy tắc URL được kiểm tra chặt — các lỗi hay gặp:
 | URL chứa `?query`, `#fragment` hoặc `user:pass@` | **Từ chối** |
 
 Lưu ý ưu tiên: biến đã có sẵn trong process environment **thắng** giá trị trong
-`.env`. Khi test nhiều endpoint, dùng tệp riêng ngoài repo:
+`.env`. Khi test nhiều endpoint (dev/staging/prod), dùng tệp riêng ngoài repo:
 
 ```bash
-.venv/bin/azure-openai-cache-benchmark dry-run --env-file /path/khach-a.env
+.venv/bin/azure-openai-cache-benchmark dry-run --env-file /path/staging.env
 ```
 
 Không commit `.env`; không dán key vào lệnh shell (lộ qua shell history).
@@ -411,7 +417,7 @@ Không commit `.env`; không dán key vào lệnh shell (lộ qua shell history)
 ```
 
 Bộ test không gọi mạng. Bước này xác nhận môi trường cài đúng trước khi đụng
-tới endpoint của khách.
+tới endpoint thật.
 
 ### B.4 Dry-run và trần chi phí
 
@@ -431,23 +437,23 @@ Manifest: runs/dry-<...>/manifest.json
 
 `Conservative no-cache envelope` là **trần chi phí bảo thủ**: giả định không
 trúng cache lần nào và dùng tối đa 120 attempt. Chi phí thật của một run pass
-thấp hơn nhiều (mẫu thật: $0.39 tổng thể). Đưa con số envelope cho khách duyệt
-trước khi chạy live.
+thấp hơn nhiều (mẫu thật: $0.39 tổng thể). Duyệt con số envelope này trước khi
+chạy live.
 
 Mặc định dry-run vẫn gọi **Azure Retail Prices API** (API giá công khai, không
 cần key) để lấy ba đơn giá. Hai tình huống cần flag:
 
 - **Không có mạng ra ngoài / không cần tiền:** thêm `--skip-pricing` — mọi ô
   tiền thành `n/a`.
-- **Deployment của khách không phải `gpt-5.4-mini`:** bộ lọc giá bán lẻ gắn
+- **Deployment của bạn không phải `gpt-5.4-mini`:** bộ lọc giá bán lẻ gắn
   cứng meter của `5.4 mini`, nên giá tra tự động sẽ **sai model**. Bắt buộc
   chọn một trong hai:
 
 ```bash
 # cách 1: bỏ pricing
---model <model-cua-khach> --skip-pricing
+--model <model-cua-ban> --skip-pricing
 # cách 2: tự cấp đủ BA đơn giá USD/1M token (thiếu một cái sẽ báo lỗi)
---model <model-cua-khach> \
+--model <model-cua-ban> \
   --input-price 0.75 --cached-input-price 0.075 --output-price 4.50
 ```
 
@@ -458,7 +464,7 @@ cần key) để lấy ba đơn giá. Hai tình huống cần flag:
 ```
 
 `--confirm-live` là chốt an toàn bắt buộc; thiếu nó lệnh dừng ngay với thông
-báo yêu cầu xem dry-run cost trước. Flag hữu ích khi endpoint khách chậm hoặc
+báo yêu cầu xem dry-run cost trước. Flag hữu ích khi endpoint chậm hoặc
 hay nghẽn:
 
 | Flag | Mặc định | Khi nào chỉnh |
@@ -468,7 +474,7 @@ hay nghẽn:
 | `--max-attempts` | 120 | Trần HTTP attempt tuyệt đối; chỉ nhận 105–120 |
 | `--idle-gap-seconds` | 660 | Khoảng nghỉ đo idle-retention; giảm làm run nhanh hơn nhưng đo retention yếu đi |
 | `--paced-interval-seconds` | 4.2 | Nhịp gửi của arm paced |
-| `--run-id` | tự sinh | Đặt tên có ý nghĩa, ví dụ `live-khach-a-lan-1` |
+| `--run-id` | tự sinh | Đặt tên có ý nghĩa, ví dụ `live-staging-lan-1` |
 
 Trình tự thực thi: 3 yêu cầu **probe** (kiểm tra endpoint có bật prompt cache
 và cache có cô lập theo key không: A-cold → B-cold → A-warm) → nếu probe pass,
@@ -523,28 +529,28 @@ mẫu ở đó là bằng chứng đã commit của một run chuẩn và đư�
 | `PricingError` khi đổi `--model` | Meter giá gắn với `gpt-5.4-mini` | `--skip-pricing` hoặc đủ ba `--*-price` |
 | Probe fail: warm không trúng cache | Endpoint/model chưa bật prompt caching, hoặc cache không hoạt động | Xác nhận model hỗ trợ prompt caching trên Azure OpenAI; thử lại giờ thấp tải |
 | HTTP 401/403 trong `requests.jsonl` | Key sai/hết hạn, thiếu quyền | Cấp lại key, kiểm tra resource |
-| HTTP 404 | Model/deployment không tồn tại trên resource | Kiểm tra `--model` khớp tên deployment của khách |
+| HTTP 404 | Model/deployment không tồn tại trên resource | Kiểm tra `--model` khớp tên deployment trên resource của bạn |
 | Nhiều 429, run cạn budget | Quota TPM/RPM thấp | Tăng quota; chạy giờ thấp tải; tăng `--paced-interval-seconds` |
 | `run_status=incomplete`, exit 2 | Fatal error hoặc Ctrl-C | Đọc `fatal_error`; chạy lại với `--run-id` mới (thư mục run không ghi đè) |
 | `completed_with_findings` | Có yêu cầu thất bại chung cuộc | Drill-down A.5 lọc `status=failed`, xem `http_status` |
 
 ---
 
-## Phần C. Test với system prompt của khách hàng
+## Phần C. Test với system prompt riêng của bạn
 
 ### C.0 Thực tế cần biết trước
 
 **CLI không có flag thay system prompt.** Suite 102 yêu cầu luôn dùng prompt
 tiếng Việt đóng gói trong package (SHA-256 `f99363a4...`). Đây là chủ ý: bộ số
 liệu chuẩn chỉ so sánh được giữa các run khi payload bất biến, và hai bộ test
-khóa hash sẽ fail nếu prompt đổi. Vì vậy "test prompt của khách" có ba con
+khóa hash sẽ fail nếu prompt đổi. Vì vậy test prompt riêng có ba con
 đường, chọn theo mục tiêu:
 
 ```mermaid
 flowchart TD
-    Q{Mục tiêu?} -->|Xác nhận nhanh prompt khách<br/>có cache tốt trên endpoint khách| A[Con đường A<br/>A/B thủ công 2-4 lần gọi]
+    Q{Mục tiêu?} -->|Xác nhận nhanh prompt của bạn<br/>có cache tốt trên endpoint của bạn| A[Con đường A<br/>A/B thủ công 2-4 lần gọi]
     Q -->|Cần số liệu suite đầy đủ<br/>bằng Python, giữ repo nguyên| B[Con đường B<br/>Python API + prompt ngoài]
-    Q -->|Fork riêng cho khách,<br/>prompt khách thành chuẩn mới| C[Con đường C<br/>Thay package resource + cập nhật test]
+    Q -->|Fork riêng,<br/>prompt của bạn thành chuẩn mới| C[Con đường C<br/>Thay package resource + cập nhật test]
 ```
 
 ### C.1 Con đường A — A/B cold/warm thủ công (khuyến nghị đầu tiên)
@@ -561,8 +567,8 @@ lỗi endpoint.
 import os, pathlib
 from openai import OpenAI
 
-SYSTEM_PROMPT = pathlib.Path("customer_prompt.md").read_text(encoding="utf-8")
-CACHE_KEY = "khach-a-prompt-v1"          # ổn định, không PII, không timestamp
+SYSTEM_PROMPT = pathlib.Path("my_system_prompt.md").read_text(encoding="utf-8")
+CACHE_KEY = "my-prompt-v1"               # ổn định, không PII, không timestamp
 
 client = OpenAI(
     base_url=os.environ["OPENAI_BASE_URL"],
@@ -573,7 +579,7 @@ client = OpenAI(
 def one_call(tag: str) -> None:
     terminal = None
     for event in client.responses.create(
-        model="gpt-5.4-mini",             # đổi theo deployment của khách
+        model="gpt-5.4-mini",             # đổi theo deployment của bạn
         instructions=SYSTEM_PROMPT,       # PHẢI byte-identical giữa hai lần
         input="Trả lời đúng một từ: OK.",
         prompt_cache_key=CACHE_KEY,
@@ -594,7 +600,7 @@ one_call("WARM")   # kỳ vọng cached >= 1024 và xấp xỉ phần prefix ổ
 
 Diễn giải:
 
-- WARM `cached ≈ input` → prompt khách cache tốt trên endpoint khách.
+- WARM `cached ≈ input` → prompt của bạn cache tốt trên endpoint của bạn.
 - WARM `cached = 0` → kiểm tra: prompt < 1024 token? hai lần gọi có khác nhau
   dù chỉ một byte? key có đổi? model có hỗ trợ caching?
 - WARM cached dương nhưng thấp so với kích thước prompt → phần đầu prompt có
@@ -606,7 +612,7 @@ Diễn giải:
 ### C.2 Con đường B — Python API của package với prompt ngoài
 
 `load_prompt_asset(path=...)` nhận prompt từ tệp ngoài; CLI không expose nhưng
-API dùng được. Prompt khách phải thỏa **contract của benchmark**:
+API dùng được. Prompt của bạn phải thỏa **contract của benchmark**:
 
 1. 4.000–5.000 từ;
 2. đúng một marker mở phần động, nguyên văn:
@@ -620,7 +626,7 @@ API dùng được. Prompt khách phải thỏa **contract của benchmark**:
    `PROMPT_WORD_COUNT`, `EVIDENCE_BLOCK`, `RETRIEVED_CONTENT`) — placeholder lạ
    sẽ raise lỗi validation.
 
-Kiểm tra contract và dựng suite từ prompt khách:
+Kiểm tra contract và dựng suite từ prompt của bạn:
 
 ```python
 from pathlib import Path
@@ -634,23 +640,23 @@ errors = validate_prompt_asset(asset)
 if errors:
     raise SystemExit("\n".join(errors))   # sửa prompt tới khi sạch lỗi
 
-specs = build_suite(run_id="khach-a-suite-01", asset=asset)
+specs = build_suite(run_id="my-suite-01", asset=asset)
 print(len(specs), "planned requests")     # 102, cùng cấu trúc suite chuẩn
 
 # Hoặc chỉ lấy payload đã render cho script A/B ở C.1:
-payload = render_system_prompt(asset, namespace="khach-a", case_id="ab-01")
+payload = render_system_prompt(asset, namespace="ab-test", case_id="ab-01")
 ```
 
 Thực thi đủ 102 yêu cầu từ `specs` đòi hỏi tự nối runtime (client, budget,
 writer) như `commands/live.py` — dành cho engineer xây harness riêng. Với đa số
 nhu cầu, validate contract + A/B bằng payload render sẵn là đủ.
 
-### C.3 Con đường C — thay packaged resource (fork chính thức cho khách)
+### C.3 Con đường C — thay packaged resource (fork chính thức)
 
-Khi khách cần bộ số liệu suite đầy đủ với prompt của họ như một baseline lặp
+Khi bạn cần bộ số liệu suite đầy đủ với prompt riêng như một baseline lặp
 lại được:
 
-1. Đưa prompt khách về đúng contract ở C.2 (giữ marker và bộ placeholder).
+1. Đưa prompt của bạn về đúng contract ở C.2 (giữ marker và bộ placeholder).
 2. Ghi đè
    `src/azure_openai_cache_benchmark/prompts/enterprise_agent_creator_system_prompt_vi.md`.
 3. Cập nhật hai bộ test khóa hash — chúng **phải** fail sau bước 2, đó là
@@ -662,9 +668,9 @@ lại được:
    Lấy giá trị mới bằng cách chạy test và chép hash thực tế in ra trong
    assertion fail, sau khi đã tự kiểm chứng prompt đúng ý.
 4. Chạy toàn bộ `unittest` + `dry-run`; số liệu run mới **không so sánh được**
-   với run của prompt cũ — ghi rõ vào báo cáo gửi khách.
+   với run của prompt cũ — ghi rõ điều này khi chia sẻ kết quả.
 
-Làm việc này trên fork/branch riêng cho khách; đừng trộn vào baseline chung.
+Làm việc này trên fork/branch riêng; đừng trộn vào baseline chung.
 
 ### C.4 Chọn con đường nào
 
@@ -674,7 +680,7 @@ Làm việc này trên fork/branch riêng cho khách; đừng trộn vào baseli
 | Sửa repo | Không | Không | Có (fork) |
 | Ràng buộc contract prompt | Không (chỉ cần ≥ 1024 token) | Có, đầy đủ | Có, đầy đủ |
 | Kết quả | cached_tokens trực tiếp | Suite specs / payload chuẩn | Bộ 5 tệp báo cáo chính thức |
-| Phù hợp | Xác nhận nhanh, POC | Harness tùy chỉnh | Baseline lặp lại cho khách |
+| Phù hợp | Xác nhận nhanh, POC | Harness tùy chỉnh | Baseline lặp lại với prompt riêng |
 
 ---
 
@@ -723,7 +729,7 @@ cắt cache dịch lên theo. (GUIDE §15, anti-patterns §20.)
 Publish asset bất biến (prompt + tool schema + output schema + hash) → deploy
 → **một** synthetic warm-up mỗi deployment/bucket → gọi xác nhận đọc
 `cached_tokens` → canary nhỏ → theo dõi → tăng dần → rollback theo version/key
-khi gate fail. Không warm-up bằng dữ liệu khách. (GUIDE §18.)
+khi gate fail. Không warm-up bằng dữ liệu người dùng thật. (GUIDE §18.)
 
 ### D.5 Checklist monitoring
 
