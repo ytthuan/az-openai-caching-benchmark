@@ -1,0 +1,1 @@
+"""Bundled benchmark prompt assets."""

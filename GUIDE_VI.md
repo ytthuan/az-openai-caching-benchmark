@@ -35,65 +35,11 @@ Benchmark không tạo SLA retention hay latency. Kết quả synthetic phải �
 
 ## 3. Chuẩn bị môi trường
 
-```bash
-cd /path/to/az-openai-cache
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-cp .env.example .env
-```
-
-`.env`:
-
-```dotenv
-OPENAI_BASER_URL="https://<resource>.openai.azure.com/openai/v1/"
-OPENAI_API_KEY=""
-```
-
-Fallback:
-
-```dotenv
-OPENAI_BASE_URL="https://<resource>.openai.azure.com/openai/v1/"
-```
-
-Security rules:
-
-- chỉ ba key trên được parse;
-- `.env` là data, không được shell `source`;
-- process environment thắng dotenv;
-- `OPENAI_BASER_URL` được ưu tiên khi cả hai URL tồn tại;
-- API key không vào manifest, request artifact, report hoặc sample;
-- lỗi được redact đệ quy;
-- `.env`, `.venv` và `runs/` không được commit.
+Cài đặt, cấu hình `.env` (`OPENAI_BASE_URL`, `OPENAI_API_KEY`), quy tắc URL và ba entrypoint được hướng dẫn từng bước tại [PLAYBOOK, phần B.1–B.2](docs/PLAYBOOK_VI.md). Nguyên tắc bảo mật cố định: chỉ hai biến môi trường trên được parse, `.env` là dữ liệu không được shell `source`, process environment thắng dotenv, API key không xuất hiện trong bất kỳ artifact nào và lỗi được redact đệ quy.
 
 ## 4. Preflight
 
-```bash
-.venv/bin/python -m py_compile benchmark.py benchmark_core.py
-.venv/bin/python -m unittest discover -s tests -v
-.venv/bin/python benchmark.py dry-run
-```
-
-Dry-run không gọi model. Nó:
-
-- load prompt và kiểm tra word count 4.000–5.000;
-- xác nhận exact dynamic marker;
-- build đúng 102 planned requests;
-- xác nhận order liên tục 1–102;
-- xác nhận optimized cohort đúng 44 warm requests;
-- xác nhận mười `pair_id`, namespace và key khác nhau;
-- xác nhận cold/warm member của mỗi pair có request payload hash giống nhau;
-- lấy public prices và tính conservative no-cache ceiling đến hard cap 120.
-
-Nếu pricing public không phù hợp với contract:
-
-```bash
-.venv/bin/python benchmark.py dry-run \
-  --input-price <usd-per-1m> \
-  --cached-input-price <usd-per-1m> \
-  --output-price <usd-per-1m>
-```
-
-Ba override là atomic: thiếu một giá thì lệnh fail.
+Trình tự kiểm tra trước khi chạy thật — unittest, dry-run, ước tính trần chi phí và ghi đè giá theo hợp đồng — nằm tại [PLAYBOOK, phần B.3–B.4](docs/PLAYBOOK_VI.md). Dry-run không gọi model; nó validate prompt contract, dựng đúng 102 planned requests, xác nhận optimized cohort 44 và mười cặp matched latency, rồi tính conservative no-cache ceiling đến hard cap 120.
 
 ## 5. Thiết kế suite
 
@@ -211,7 +157,7 @@ SDK `max_retries=0`. Runner claim budget dưới lock trước mỗi `responses.
 ## 7. Live workflow
 
 ```bash
-.venv/bin/python benchmark.py live \
+.venv/bin/azure-openai-cache-benchmark live \
   --confirm-live \
   --env-file /secure/path/benchmark.env
 ```
@@ -388,25 +334,7 @@ delta =
 
 ## 13. Offline rebuild
 
-```bash
-.venv/bin/python benchmark.py report runs/<run-id>
-```
-
-Input duy nhất:
-
-- `manifest.json`;
-- `requests.jsonl`.
-
-Rebuild:
-
-- dùng price snapshot trong manifest;
-- dùng `execution.completed_at` làm derived timestamp;
-- chọn attempt mới nhất theo logical request ID;
-- ghi lại summary JSON, CSV và Markdown;
-- không gọi model;
-- không gọi price API.
-
-Chạy rebuild hai lần trên raw files không đổi phải cho byte-identical derived output.
+Lệnh `report` dựng lại summary JSON/CSV và report Markdown chỉ từ `manifest.json` + `requests.jsonl`; các bước tại [PLAYBOOK, phần B.6](docs/PLAYBOOK_VI.md). Tính chất cố định: rebuild dùng price snapshot và `execution.completed_at` đã chụp trong manifest, chọn attempt mới nhất theo logical request ID, không gọi model hay price API, và chạy hai lần trên raw files không đổi phải cho derived output byte-identical.
 
 ## 14. Artifact handling
 
